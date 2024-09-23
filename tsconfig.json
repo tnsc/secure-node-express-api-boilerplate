@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",
+    "rootDir": "./src",       // Make sure this points to the source directory
+    "outDir": "./dist",
+    "baseUrl": "./src",       // Allows you to use absolute imports from src
+    "strict": true,
+    "esModuleInterop": true,
+    "paths": {
+      "*": ["*"]
+    }
+  },
+  "include": ["src/**/*.ts"],  // This ensures all .ts files in src are included
+  "exclude": ["node_modules"]
+}
