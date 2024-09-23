@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: express-app
+    plan: free  # or starter/standard, based on your plan
+    branch: main
+    runtime: node  # Specify runtime for Node.js environment
+    buildCommand: 'npm install && npm run build'
+    startCommand: 'npm run start'
+    autoDeploy: false  # Disable automatic deploy to handle it via GitHub Actions
