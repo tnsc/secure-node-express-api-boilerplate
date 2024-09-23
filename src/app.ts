@@ -1,19 +1,23 @@
-import express, { Application, Request, Response } from "express";
+import express, { Express } from "express";
 import userRoutes from "./routes/user";
+import { setupSwagger } from "./swagger";
 
-const app: Application = express();
+const app: Express = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware to parse JSON bodies
 app.use(express.json());
 
 // Basic route
-app.get("/", (req: Request, res: Response) => {
+app.get("/", (_req, res) => {
   res.send("Welcome to the API!");
 });
 
 // User routes
 app.use("/api/users", userRoutes);
+
+// Setup Swagger
+setupSwagger(app);
 
 // Start server
 app.listen(PORT, () => {
