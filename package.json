@@ -10,7 +10,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
     "build": "tsc",
     "start": "node dist/app.js",
-    "deploy": "npm run build && npm run test && git add . && git commit -m \"$m\" && git push origin $(git branch | grep '*' | sed 's/* //')"
+    "deploy": "npm run build && npm run test && git add . && git commit -m \"$m\" && git push origin $(node get-branch.js)"
   },
   "keywords": [],
   "author": "",
