@@ -19,7 +19,7 @@ describe("User Controller", () => {
     getAllUsers(mockReq as Request, mockRes as Response);
 
     expect(mockJson).toHaveBeenCalledWith([
-      { id: 1, name: "This test will fail" },
+      { id: 1, name: "Alice" },
       { id: 2, name: "Bob" },
     ]);
   });
