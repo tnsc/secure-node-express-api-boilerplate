@@ -1,9 +1,20 @@
+# Exported from Render on 2024-09-24T19:47:41Z
 services:
-  - type: web
-    name: express-app
-    plan: free  # or starter/standard based on your plan
-    branch: main
-    runtime: node  # Specify Node.js runtime
-    buildCommand: 'npm install && npm run build && npm test'  # Install, build, and run tests
-    startCommand: 'npm run start'
-    autoDeploy: false  # Disable automatic deploy to handle it via GitHub Actions
+- type: web
+  name: node-express-api-boilerplate
+  runtime: node
+  repo: https://github.com/tnsc/node-express-api-boilerplate
+  plan: free
+  envVars:
+  - key: API_BASE_URL
+    sync: false
+  - key: PORT
+    sync: false
+  - key: REDIS_URL
+    sync: false
+  - key: RENDER_API_KEY
+    sync: false
+  region: frankfurt
+  buildCommand: npm install && npm run build
+  startCommand: npm start
+version: "1"
