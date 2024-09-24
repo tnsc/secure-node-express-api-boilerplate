@@ -3,10 +3,12 @@
  */
 import express, { Express } from "express";
 import { config } from "dotenv";
+import cors from "cors"; // Import CORS middleware
 import userRoutes from "./routes/user";
 import { setupSwagger } from "./middleware/swagger";
 import { apiLimiterDefault } from "./middleware/rateLimit";
 import compressionMiddleware from "./middleware/compression";
+import corsMiddleware from "./middleware/cors";
 
 /**
  * Load environment variables from .env file.
@@ -22,6 +24,11 @@ const app: Express = express();
 /******************************************************************************
  * Middleware
  *****************************************************************************/
+
+/**
+ * Enable CORS for specific origins.
+ */
+app.use(corsMiddleware);
 
 /**
  * Add compression middleware to reduce response sizes.
