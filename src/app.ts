@@ -4,7 +4,7 @@
 import express, { Express } from "express";
 import { config } from "dotenv";
 import userRoutes from "./routes/user";
-import { setupSwagger } from "./swagger";
+import { setupSwagger } from "./middleware/swagger";
 import { apiLimiterDefault } from "./middleware/rateLimit";
 import compressionMiddleware from "./middleware/compression";
 
