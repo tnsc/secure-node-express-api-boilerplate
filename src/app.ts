@@ -1,37 +1,18 @@
 import express, { Express } from "express";
-import rateLimit from "express-rate-limit";
+import { config } from "dotenv";
 import userRoutes from "./routes/user";
+import demoRoutes from "./routes/demo";
 import { setupSwagger } from "./swagger";
+import { apiLimiterDefault } from "./middleware/rateLimit";
 
+config();
 const app: Express = express();
-const PORT = process.env.PORT || 3000;
-
-// Configure the rate limiter
-const apiLimiterDefault = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 15, // Limit each IP to 100 requests per `window` (15 minutes)
-  message: "Too many requests from this IP, please try again after 15 minutes.",
-  headers: true, // Send rate limit headers
-});
-
-/*
-const apiLimiterSignInUp = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // Limit each IP to 100 requests per `window` (15 minutes)
-  message: "Too many requests from this IP, please try again after 15 minutes.",
-  headers: true, // Send rate limit headers
-});
-
-// Apply the rate limiter only to the /login route
-app.post('/api/login', apiLimiter, (req, res) => {
-  res.send('Login route');
-});
-*/
+const PORT = process.env.PORT || 3001;
 
 // Middleware to parse JSON bodies
 app.use(express.json());
 // Apply the rate limiting middleware to all API routes
-app.use("/api/", apiLimiterDefault);
+app.use(process.env.API_BASE_URL as string, apiLimiterDefault);
 
 // Basic route
 app.get("/", (_req, res) => {
@@ -39,7 +20,10 @@ app.get("/", (_req, res) => {
 });
 
 // User routes
-app.use("/api/users", userRoutes);
+app.use(`${process.env.API_BASE_URL}/users`, userRoutes);
+
+// Demo caching
+app.use(`${process.env.API_BASE_URL}/demoCaching`, demoRoutes);
 
 // Setup Swagger
 setupSwagger(app);

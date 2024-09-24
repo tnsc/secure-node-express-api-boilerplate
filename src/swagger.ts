@@ -12,7 +12,9 @@ const options = {
     },
     servers: [
       {
-        url: "http://localhost:3000/api",
+        url: `http://localhost:${process.env.PORT || 3001}${
+          process.env.API_BASE_URL
+        }`,
       },
     ],
   },
