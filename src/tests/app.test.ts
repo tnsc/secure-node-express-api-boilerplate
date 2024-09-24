@@ -6,7 +6,7 @@ describe("API Integration Tests", () => {
     const response = await request(app).get("/api/users");
     expect(response.status).toBe(200);
     expect(response.body).toEqual([
-      { id: 1, name: "Alice" },
+      { id: 1, name: "Alice Failing Test" },
       { id: 2, name: "Bob" },
     ]);
   });
