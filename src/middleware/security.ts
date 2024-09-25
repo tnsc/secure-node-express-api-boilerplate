@@ -117,6 +117,18 @@ export const securityMiddleware = [
   },
 
   /**
+   * Middleware to set Permissions-Policy header.
+   * Controls which browser features can be used in the website.
+   */
+  (_req: Request, res: Response, next: NextFunction) => {
+    res.setHeader(
+      "Permissions-Policy",
+      "geolocation=(), microphone=(), camera=(), fullscreen=(self)" // Example policies
+    );
+    next();
+  },
+
+  /**
    * Cookie parsing middleware.
    */
   cookieParser(),

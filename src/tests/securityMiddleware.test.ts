@@ -133,4 +133,12 @@ describe("Content Security Policy Middleware", () => {
     const response = await request(app).get("/some-endpoint");
     expect(response.headers["x-powered-by"]).toBeUndefined();
   });
+
+  it("should set Permissions-Policy header", async () => {
+    const response = await request(app).get("/some-endpoint");
+
+    expect(response.headers["permissions-policy"]).toBe(
+      "geolocation=(), microphone=(), camera=(), fullscreen=(self)"
+    );
+  });
 });
