@@ -2,7 +2,14 @@ import request from "supertest";
 import nock from "nock";
 import app from "../app";
 
+/**
+ * Test suite for Content Security Policy Middleware
+ * @description Tests various security-related headers and policies
+ */
 describe("Content Security Policy Middleware", () => {
+  /**
+   * Tests if the Content-Security-Policy header is correctly applied
+   */
   it("should apply the Content-Security-Policy header", async () => {
     const response = await request(app).get("/api/test/large-content");
 
@@ -22,6 +29,9 @@ describe("Content Security Policy Middleware", () => {
     );
   });
 
+  /**
+   * Tests if trusted sources are included in the img-src directive
+   */
   it("should include trusted sources in img-src directive", async () => {
     const trustedSources = process.env.TRUSTED_SOURCES?.split(",") || [];
     const response = await request(app).get("/api/test/large-content");
@@ -32,6 +42,9 @@ describe("Content Security Policy Middleware", () => {
     });
   });
 
+  /**
+   * Tests if CSP is applied correctly on other routes
+   */
   it("should apply CSP on other routes", async () => {
     const response = await request(app).get("/api/users");
 
@@ -40,6 +53,9 @@ describe("Content Security Policy Middleware", () => {
     );
   });
 
+  /**
+   * Tests if X-XSS-Protection header is set correctly
+   */
   it("should set X-XSS-Protection header", async () => {
     const response = await request(app).get("/api/test/large-content");
 
@@ -50,6 +66,9 @@ describe("Content Security Policy Middleware", () => {
     expect(response.headers["x-xss-protection"]).toBe("1; mode=block");
   });
 
+  /**
+   * Tests if X-Frame-Options header is set correctly
+   */
   it("should set X-Frame-Options header", async () => {
     const response = await request(app).get("/api/test/large-content"); // Adjust the route as necessary
 
@@ -57,6 +76,9 @@ describe("Content Security Policy Middleware", () => {
     expect(response.headers["x-frame-options"]).toBe("DENY");
   });
 
+  /**
+   * Tests if Strict-Transport-Security header is set correctly
+   */
   it("should set Strict-Transport-Security header", async () => {
     const response = await request(app).get("/api/test/large-content"); // Adjust the route as necessary
 
@@ -66,6 +88,9 @@ describe("Content Security Policy Middleware", () => {
     );
   });
 
+  /**
+   * Tests if secure cookies are set correctly
+   */
   it("should set secure cookies", async () => {
     const response = await request(app).get("/api/test/large-content");
     const cookies = response.headers["set-cookie"];
@@ -77,6 +102,9 @@ describe("Content Security Policy Middleware", () => {
     expect(cookies[0]).toContain("SameSite=Strict");
   });
 
+  /**
+   * Tests if Secure flag is not set in non-HTTPS environments
+   */
   it("should not set the Secure flag in non-HTTPS environments", async () => {
     process.env.NODE_ENV = "development"; // Simulate non-HTTPS environment
 
@@ -89,6 +117,9 @@ describe("Content Security Policy Middleware", () => {
     expect(cookies[0]).toContain("SameSite=Strict");
   });
 
+  /**
+   * Tests if Secure flag is set in HTTPS environments
+   */
   it("should set the Secure flag in HTTPS environments", async () => {
     process.env.NODE_ENV = "production"; // Simulate production environment
 
@@ -101,6 +132,9 @@ describe("Content Security Policy Middleware", () => {
     expect(cookies[0]).toContain("SameSite=Strict");
   });
 
+  /**
+   * Tests if Max-Age and Expires headers are set correctly
+   */
   it("should set the correct Max-Age and Expires headers", async () => {
     const response = await request(app).get("/api/test/large-content");
 
@@ -110,6 +144,9 @@ describe("Content Security Policy Middleware", () => {
     expect(cookies[0]).toMatch(/Expires=[^;]+GMT/); // Ensure Expires is set
   });
 
+  /**
+   * Tests DNS prefetching settings
+   */
   it("should allow DNS prefetching for own website", async () => {
     const response = await request(app).get("/"); // Test your main route
 
@@ -117,6 +154,9 @@ describe("Content Security Policy Middleware", () => {
     expect(response.headers["x-dns-prefetch-control"]).toBe("on");
   });
 
+  /**
+   * Tests DNS prefetching settings for third-party content
+   */
   it("should disable DNS prefetching for third-party content", async () => {
     // Mock the third-party request
     nock("https://example.com")
@@ -129,11 +169,17 @@ describe("Content Security Policy Middleware", () => {
     expect(response.headers["x-dns-prefetch-control"]).toBe("off");
   });
 
+  /**
+   * Tests removal of X-Powered-By header
+   */
   it("should remove X-Powered-By header", async () => {
     const response = await request(app).get("/api/test/large-content");
     expect(response.headers["x-powered-by"]).toBeUndefined();
   });
 
+  /**
+   * Tests Permissions-Policy header
+   */
   it("should set Permissions-Policy header", async () => {
     const response = await request(app).get("/api/test/large-content");
 
@@ -143,7 +189,7 @@ describe("Content Security Policy Middleware", () => {
   });
 
   /**
-   * Test for Cross-Origin-Embedder-Policy (COEP) header.
+   * Tests Cross-Origin-Embedder-Policy header
    */
   it("should set Cross-Origin-Embedder-Policy header to 'require-corp'", async () => {
     const response = await request(app).get("/api/test/large-content");
@@ -153,7 +199,7 @@ describe("Content Security Policy Middleware", () => {
   });
 
   /**
-   * Test for Cross-Origin-Resource-Policy (CORP) header.
+   * Tests Cross-Origin-Resource-Policy header
    */
   it("should set Cross-Origin-Resource-Policy header to 'same-origin'", async () => {
     const response = await request(app).get("/api/test/large-content");
