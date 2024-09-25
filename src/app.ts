@@ -38,6 +38,11 @@ app.use(
  */
 app.use(contentSecurityPolicy);
 
+app.use((req, res, next) => {
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  next();
+});
+
 /**
  * Enable CORS for specific origins.
  */
