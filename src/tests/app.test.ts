@@ -24,7 +24,7 @@ describe("API Integration Tests", () => {
   });
 
   it("should set X-XSS-Protection header", async () => {
-    const response = await request(app).get("/large");
+    const response = await request(app).get("/api/test/large-content");
 
     // Check that the X-XSS-Protection header is set
     expect(response.headers["x-xss-protection"]).toBeDefined();

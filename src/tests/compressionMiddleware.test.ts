@@ -4,7 +4,7 @@ import app from "../app"; // Ensure this points to your Express app
 describe("Compression Middleware", () => {
   it("should compress the response when Accept-Encoding: gzip is set", async () => {
     const response = await request(app)
-      .get("/large") // Or any route that returns a sizable response
+      .get("/api/test/large-content") // Or any route that returns a sizable response
       .set("Accept-Encoding", "gzip")
       .expect(200);
 
@@ -14,7 +14,7 @@ describe("Compression Middleware", () => {
 
   it("should STILL compress the response when Accept-Encoding is not set", async () => {
     const response = await request(app)
-      .get("/large") // Same endpoint
+      .get("/api/test/large-content") // Same endpoint
       .expect(200);
 
     // Ensure Content-Encoding header is not set

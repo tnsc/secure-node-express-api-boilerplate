@@ -21,6 +21,13 @@ export const securityMiddleware = [
       preload: true, // Preload in browsers
     },
     xssFilter: true, // X-XSS-Protection: 1; mode=block
+    // Enable DNS prefetch control
+    dnsPrefetchControl: {
+      allow: false, // Disable DNS prefetching for third-party resources
+    },
+    referrerPolicy: {
+      policy: "no-referrer", // Hide referrer information from other sites
+    },
   }),
 
   // Parse cookies
@@ -34,6 +41,24 @@ export const securityMiddleware = [
       sameSite: "strict", // No cross-site cookie sharing
       maxAge: 1000 * 60 * 60 * 24, // Cookie valid for 1 day
     });
+    next();
+  },
+
+  // Middleware to control DNS prefetching
+  (req: Request, res: Response, next: NextFunction) => {
+    // Check if the request is for third-party content
+    const isThirdPartyContent = req.path === "/api/test/third-party-content";
+
+    // Check if the request is from localhost or 127.0.0.1
+    const host = req.get("host");
+    const isOwnDomain =
+      host?.startsWith("127.0.0.1") || host?.startsWith("localhost");
+
+    // Set X-DNS-Prefetch-Control based on whether it's your own domain
+    res.setHeader(
+      "X-DNS-Prefetch-Control",
+      isThirdPartyContent ? "off" : isOwnDomain ? "on" : "off"
+    );
     next();
   },
 ];

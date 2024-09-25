@@ -4,6 +4,7 @@
 import express, { Express } from "express";
 import { config } from "dotenv";
 import userRoutes from "./routes/user";
+import testRoutes from "./routes/test";
 import { setupSwagger } from "./middleware/swagger";
 import { apiLimiterDefault } from "./middleware/rateLimit";
 import compressionMiddleware from "./middleware/compression";
@@ -73,6 +74,9 @@ app.use(process.env.API_BASE_URL as string, apiLimiterDefault);
  * Mount user routes under the API base URL.
  */
 app.use(`${process.env.API_BASE_URL}/users`, userRoutes);
+process.env.NODE_ENV &&
+  "test" &&
+  app.use(`${process.env.API_BASE_URL}/test`, testRoutes);
 
 /******************************************************************************
  * Other utils and config
@@ -84,25 +88,6 @@ app.use(`${process.env.API_BASE_URL}/users`, userRoutes);
  * @param {Express} app - The Express application instance
  */
 setupSwagger(app);
-
-/**
- * Test route to demonstrate compression functionality.
- */
-app.get("/large", (req, res) => {
-  /**
-   * Set the Content-Type header for HTML responses.
-   */
-  res.setHeader("Content-Type", "text/html");
-
-  /**
-   * Send a large HTML response to demonstrate compression.
-   */
-  res.send(
-    "<html><body>" +
-      "Hello, this response is compressed! ".repeat(1000) +
-      "</body></html>"
-  );
-});
 
 /******************************************************************************
  * Server

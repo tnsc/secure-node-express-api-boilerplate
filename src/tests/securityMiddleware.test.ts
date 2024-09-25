@@ -1,9 +1,10 @@
 import request from "supertest";
+import nock from "nock";
 import app from "../app";
 
 describe("Content Security Policy Middleware", () => {
   it("should apply the Content-Security-Policy header", async () => {
-    const response = await request(app).get("/large");
+    const response = await request(app).get("/api/test/large-content");
 
     // Check that the CSP header includes the correct defaultSrc directive
     expect(response.headers["content-security-policy"]).toContain(
@@ -23,7 +24,7 @@ describe("Content Security Policy Middleware", () => {
 
   it("should include trusted sources in img-src directive", async () => {
     const trustedSources = process.env.TRUSTED_SOURCES?.split(",") || [];
-    const response = await request(app).get("/large");
+    const response = await request(app).get("/api/test/large-content");
 
     // Check that each trusted source is present in the img-src directive
     trustedSources.forEach((source) => {
@@ -40,7 +41,7 @@ describe("Content Security Policy Middleware", () => {
   });
 
   it("should set X-XSS-Protection header", async () => {
-    const response = await request(app).get("/large");
+    const response = await request(app).get("/api/test/large-content");
 
     // Check that the X-XSS-Protection header is set
     expect(response.headers["x-xss-protection"]).toBeDefined();
@@ -50,14 +51,14 @@ describe("Content Security Policy Middleware", () => {
   });
 
   it("should set X-Frame-Options header", async () => {
-    const response = await request(app).get("/large"); // Adjust the route as necessary
+    const response = await request(app).get("/api/test/large-content"); // Adjust the route as necessary
 
     // Check that the X-Frame-Options header is set correctly
     expect(response.headers["x-frame-options"]).toBe("DENY");
   });
 
   it("should set Strict-Transport-Security header", async () => {
-    const response = await request(app).get("/large"); // Adjust the route as necessary
+    const response = await request(app).get("/api/test/large-content"); // Adjust the route as necessary
 
     // Check that the Strict-Transport-Security header is set correctly
     expect(response.headers["strict-transport-security"]).toBe(
@@ -66,7 +67,7 @@ describe("Content Security Policy Middleware", () => {
   });
 
   it("should set secure cookies", async () => {
-    const response = await request(app).get("/large");
+    const response = await request(app).get("/api/test/large-content");
     const cookies = response.headers["set-cookie"];
     expect(cookies).toBeDefined();
     expect(cookies[0]).toContain("HttpOnly");
@@ -79,7 +80,7 @@ describe("Content Security Policy Middleware", () => {
   it("should not set the Secure flag in non-HTTPS environments", async () => {
     process.env.NODE_ENV = "development"; // Simulate non-HTTPS environment
 
-    const response = await request(app).get("/large");
+    const response = await request(app).get("/api/test/large-content");
 
     const cookies = response.headers["set-cookie"];
     expect(cookies).toBeDefined();
@@ -91,7 +92,7 @@ describe("Content Security Policy Middleware", () => {
   it("should set the Secure flag in HTTPS environments", async () => {
     process.env.NODE_ENV = "production"; // Simulate production environment
 
-    const response = await request(app).get("/large");
+    const response = await request(app).get("/api/test/large-content");
 
     const cookies = response.headers["set-cookie"];
     expect(cookies).toBeDefined();
@@ -101,11 +102,30 @@ describe("Content Security Policy Middleware", () => {
   });
 
   it("should set the correct Max-Age and Expires headers", async () => {
-    const response = await request(app).get("/large");
+    const response = await request(app).get("/api/test/large-content");
 
     const cookies = response.headers["set-cookie"];
     expect(cookies).toBeDefined();
     expect(cookies[0]).toContain("Max-Age=86400"); // 1 day
     expect(cookies[0]).toMatch(/Expires=[^;]+GMT/); // Ensure Expires is set
+  });
+
+  it("should allow DNS prefetching for own website", async () => {
+    const response = await request(app).get("/"); // Test your main route
+
+    // Check the X-DNS-Prefetch-Control header is set to 'on' for own resources
+    expect(response.headers["x-dns-prefetch-control"]).toBe("on");
+  });
+
+  it("should disable DNS prefetching for third-party content", async () => {
+    // Mock the third-party request
+    nock("https://example.com")
+      .get("/")
+      .reply(200, "<html><body>Mocked third-party content</body></html>");
+
+    const response = await request(app).get("/api/test/third-party-content");
+
+    // Ensure DNS prefetching is disabled for third-party resources
+    expect(response.headers["x-dns-prefetch-control"]).toBe("off");
   });
 });
