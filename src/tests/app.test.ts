@@ -22,4 +22,14 @@ describe("API Integration Tests", () => {
     expect(response.status).toBe(404);
     expect(response.body).toEqual({ message: "User not found" });
   });
+
+  it("should set X-XSS-Protection header", async () => {
+    const response = await request(app).get("/large");
+
+    // Check that the X-XSS-Protection header is set
+    expect(response.headers["x-xss-protection"]).toBeDefined();
+
+    // Check that the value is set to '1; mode=block'
+    expect(response.headers["x-xss-protection"]).toBe("1; mode=block");
+  });
 });
