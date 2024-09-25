@@ -64,4 +64,48 @@ describe("Content Security Policy Middleware", () => {
       "max-age=31536000; includeSubDomains; preload"
     );
   });
+
+  it("should set secure cookies", async () => {
+    const response = await request(app).get("/large");
+    const cookies = response.headers["set-cookie"];
+    expect(cookies).toBeDefined();
+    expect(cookies[0]).toContain("HttpOnly");
+    if (process.env.NODE_ENV !== "test") {
+      expect(cookies[0]).toContain("Secure");
+    }
+    expect(cookies[0]).toContain("SameSite=Strict");
+  });
+
+  it("should not set the Secure flag in non-HTTPS environments", async () => {
+    process.env.NODE_ENV = "development"; // Simulate non-HTTPS environment
+
+    const response = await request(app).get("/large");
+
+    const cookies = response.headers["set-cookie"];
+    expect(cookies).toBeDefined();
+    expect(cookies[0]).toContain("HttpOnly");
+    expect(cookies[0]).not.toContain("Secure"); // Secure flag should not be present
+    expect(cookies[0]).toContain("SameSite=Strict");
+  });
+
+  it("should set the Secure flag in HTTPS environments", async () => {
+    process.env.NODE_ENV = "production"; // Simulate production environment
+
+    const response = await request(app).get("/large");
+
+    const cookies = response.headers["set-cookie"];
+    expect(cookies).toBeDefined();
+    expect(cookies[0]).toContain("HttpOnly");
+    expect(cookies[0]).toContain("Secure"); // Secure flag should be present in production
+    expect(cookies[0]).toContain("SameSite=Strict");
+  });
+
+  it("should set the correct Max-Age and Expires headers", async () => {
+    const response = await request(app).get("/large");
+
+    const cookies = response.headers["set-cookie"];
+    expect(cookies).toBeDefined();
+    expect(cookies[0]).toContain("Max-Age=86400"); // 1 day
+    expect(cookies[0]).toMatch(/Expires=[^;]+GMT/); // Ensure Expires is set
+  });
 });
