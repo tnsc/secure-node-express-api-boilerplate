@@ -128,4 +128,9 @@ describe("Content Security Policy Middleware", () => {
     // Ensure DNS prefetching is disabled for third-party resources
     expect(response.headers["x-dns-prefetch-control"]).toBe("off");
   });
+
+  it("should remove X-Powered-By header", async () => {
+    const response = await request(app).get("/some-endpoint");
+    expect(response.headers["x-powered-by"]).toBeUndefined();
+  });
 });
