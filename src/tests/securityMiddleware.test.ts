@@ -55,4 +55,13 @@ describe("Content Security Policy Middleware", () => {
     // Check that the X-Frame-Options header is set correctly
     expect(response.headers["x-frame-options"]).toBe("DENY");
   });
+
+  it("should set Strict-Transport-Security header", async () => {
+    const response = await request(app).get("/large"); // Adjust the route as necessary
+
+    // Check that the Strict-Transport-Security header is set correctly
+    expect(response.headers["strict-transport-security"]).toBe(
+      "max-age=31536000; includeSubDomains; preload"
+    );
+  });
 });

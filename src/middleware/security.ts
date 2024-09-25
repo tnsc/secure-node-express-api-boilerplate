@@ -12,6 +12,11 @@ export const securityMiddleware = helmet({
     },
   },
   frameguard: {
-    action: "deny", // This can be 'deny', 'sameorigin', or 'allow-from'
+    action: "deny",
+  },
+  hsts: {
+    maxAge: 31536000, // 1 year in seconds
+    includeSubDomains: true, // Apply to all subdomains
+    preload: true, // Indicate that the domain should be included in browsers' HSTS preload lists
   },
 });
