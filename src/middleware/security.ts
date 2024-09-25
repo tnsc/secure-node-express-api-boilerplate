@@ -129,6 +129,24 @@ export const securityMiddleware = [
   },
 
   /**
+   * Middleware to set Cross-Origin-Embedder-Policy (COEP).
+   * Protects your site from cross-origin resource access without explicit permission.
+   */
+  (_req: Request, res: Response, next: NextFunction) => {
+    res.setHeader("Cross-Origin-Embedder-Policy", "require-corp"); // You can also use 'unsafe-none' if appropriate
+    next();
+  },
+
+  /**
+   * Middleware to set Cross-Origin-Resource-Policy (CORP).
+   * Controls access to resources by cross-origin documents.
+   */
+  (_req: Request, res: Response, next: NextFunction) => {
+    res.setHeader("Cross-Origin-Resource-Policy", "same-origin"); // Or use 'cross-origin' if you want to allow more access
+    next();
+  },
+
+  /**
    * Cookie parsing middleware.
    */
   cookieParser(),

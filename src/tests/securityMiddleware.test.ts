@@ -130,15 +130,35 @@ describe("Content Security Policy Middleware", () => {
   });
 
   it("should remove X-Powered-By header", async () => {
-    const response = await request(app).get("/some-endpoint");
+    const response = await request(app).get("/api/test/large-content");
     expect(response.headers["x-powered-by"]).toBeUndefined();
   });
 
   it("should set Permissions-Policy header", async () => {
-    const response = await request(app).get("/some-endpoint");
+    const response = await request(app).get("/api/test/large-content");
 
     expect(response.headers["permissions-policy"]).toBe(
       "geolocation=(), microphone=(), camera=(), fullscreen=(self)"
+    );
+  });
+
+  /**
+   * Test for Cross-Origin-Embedder-Policy (COEP) header.
+   */
+  it("should set Cross-Origin-Embedder-Policy header to 'require-corp'", async () => {
+    const response = await request(app).get("/api/test/large-content");
+    expect(response.headers["cross-origin-embedder-policy"]).toBe(
+      "require-corp"
+    );
+  });
+
+  /**
+   * Test for Cross-Origin-Resource-Policy (CORP) header.
+   */
+  it("should set Cross-Origin-Resource-Policy header to 'same-origin'", async () => {
+    const response = await request(app).get("/api/test/large-content");
+    expect(response.headers["cross-origin-resource-policy"]).toBe(
+      "same-origin"
     );
   });
 });
