@@ -3,13 +3,13 @@
  */
 import express, { Express } from "express";
 import { config } from "dotenv";
-import cors from "cors"; // Import CORS middleware
 import userRoutes from "./routes/user";
 import { setupSwagger } from "./middleware/swagger";
 import { apiLimiterDefault } from "./middleware/rateLimit";
 import compressionMiddleware from "./middleware/compression";
 import corsMiddleware from "./middleware/cors";
-
+import helmet from "helmet";
+import { contentSecurityPolicy } from "./middleware/security"; // Custom CSP
 /**
  * Load environment variables from .env file.
  */
@@ -24,6 +24,19 @@ const app: Express = express();
 /******************************************************************************
  * Middleware
  *****************************************************************************/
+/**
+ * Apply Helmet middleware with default protections but disable default CSP
+ */
+app.use(
+  helmet({
+    contentSecurityPolicy: false, // Disable default CSP to allow custom
+  })
+);
+
+/**
+ * Apply custom Content Security Policy (CSP)
+ */
+app.use(contentSecurityPolicy);
 
 /**
  * Enable CORS for specific origins.
