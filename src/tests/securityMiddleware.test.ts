@@ -48,4 +48,11 @@ describe("Content Security Policy Middleware", () => {
     // Check that the value is set to '1; mode=block'
     expect(response.headers["x-xss-protection"]).toBe("1; mode=block");
   });
+
+  it("should set X-Frame-Options header", async () => {
+    const response = await request(app).get("/large"); // Adjust the route as necessary
+
+    // Check that the X-Frame-Options header is set correctly
+    expect(response.headers["x-frame-options"]).toBe("DENY");
+  });
 });

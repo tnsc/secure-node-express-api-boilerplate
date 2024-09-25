@@ -9,7 +9,7 @@ import { apiLimiterDefault } from "./middleware/rateLimit";
 import compressionMiddleware from "./middleware/compression";
 import corsMiddleware from "./middleware/cors";
 import helmet from "helmet";
-import { contentSecurityPolicy } from "./middleware/security"; // Custom CSP
+import { securityMiddleware } from "./middleware/security"; // Custom CSP
 /**
  * Load environment variables from .env file.
  */
@@ -34,9 +34,9 @@ app.use(
 );
 
 /**
- * Apply custom Content Security Policy (CSP)
+ * Apply custom security middleware, customizing helmet
  */
-app.use(contentSecurityPolicy);
+app.use(securityMiddleware);
 
 app.use((req, res, next) => {
   res.setHeader("X-XSS-Protection", "1; mode=block");
