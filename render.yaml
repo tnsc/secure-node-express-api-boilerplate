@@ -15,6 +15,6 @@ services:
   - key: RENDER_API_KEY
     sync: false
   region: frankfurt
-  buildCommand: npm install && npm run build
-  startCommand: npm start
+  buildCommand: npm run docker:build
+  startCommand: npm run docker:start
 version: "1"

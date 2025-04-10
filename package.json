@@ -10,6 +10,9 @@
     "dev": "ts-node-dev --respawn --transpile-only src/app.ts",
     "build": "tsc",
     "start": "node dist/app.js",
+    "docker:build": "npm run docker:build",
+    "docker:run": "docker run -p 3001:3001 node_express_api",
+    "docker:start": "npm run docker:run",
     "prepare": "husky install",
     "prepush-check": "npm run build && npm test"
   },
