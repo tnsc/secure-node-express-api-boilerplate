@@ -1,2 +1,11 @@
+# Exclude generated files from language stats
+coverage/** linguist-vendored
+dist/** linguist-vendored
+node_modules/** linguist-vendored
+
+# Force .js and .ts files to count as TypeScript
 *.js linguist-language=TypeScript
 *.ts linguist-language=TypeScript
+
+# Explicitly ignore HTML files)
+*.html linguist-vendored
